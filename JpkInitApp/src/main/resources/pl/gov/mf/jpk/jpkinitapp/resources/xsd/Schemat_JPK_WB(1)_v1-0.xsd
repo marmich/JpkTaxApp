@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:etd="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/" xmlns:kck="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2013/05/23/eD/KodyCECHKRAJOW/" xmlns:tns="http://jpk.mf.gov.pl/wzor/2016/03/09/03092/" targetNamespace="http://jpk.mf.gov.pl/wzor/2016/03/09/03092/" elementFormDefault="qualified" attributeFormDefault="unqualified" xml:lang="pl">
+	<xsd:import namespace="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/" schemaLocation="StrukturyDanych_v4-0E.xsd"/>
+	<xsd:import namespace="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2013/05/23/eD/KodyCECHKRAJOW/" schemaLocation="KodyCechKrajow_v3-0E.xsd"/>
+	<xsd:complexType name="TNaglowek">
+		<xsd:annotation>
+			<xsd:documentation>Nagłówek JPK_WB</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="KodFormularza">
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="tns:TKodFormularza">
+							<xsd:attribute name="kodSystemowy" type="xsd:string" use="required" fixed="JPK_WB (1)"/>
+							<xsd:attribute name="wersjaSchemy" type="xsd:string" use="required" fixed="1-0"/>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="WariantFormularza">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:byte">
+						<xsd:enumeration value="1"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="CelZlozenia" type="tns:TCelZlozenia"/>
+			<xsd:element name="DataWytworzeniaJPK" type="etd:TDataCzas">
+				<xsd:annotation>
+					<xsd:documentation>Data i czas wytworzenia JPK_WB</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DataOd" type="etd:TData">
+				<xsd:annotation>
+					<xsd:documentation>Data początkowa okresu, którego dotyczy JPK_WB</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DataDo" type="etd:TData">
+				<xsd:annotation>
+					<xsd:documentation>Data końcowa okresu, którego dotyczy JPK_WB</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DomyslnyKodWaluty" type="kck:currCode_Type">
+				<xsd:annotation>
+					<xsd:documentation>Trzyliterowy kod lokalnej waluty (ISO-4217), domyślny dla wytworzonego JPK_WB</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="KodUrzedu" type="etd:TKodUS"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="TKwotowy">
+		<xsd:annotation>
+			<xsd:documentation>Wartość numeryczna 18 znaków max, w tym 2 znaki po przecinku</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:decimal">
+			<xsd:totalDigits value="18"/>
+			<xsd:fractionDigits value="2"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TNaturalnyJPK">
+		<xsd:annotation>
+			<xsd:documentation>Liczby naturalne większe od zera</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="etd:TNaturalny">
+			<xsd:minExclusive value="0"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TZnakowyJPK">
+		<xsd:annotation>
+			<xsd:documentation>Typ znakowy ograniczony do 256 znaków</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="256"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TKodFormularza">
+		<xsd:annotation>
+			<xsd:documentation>Symbol wzoru formularza</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="JPK_WB"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TCelZlozenia">
+		<xsd:annotation>
+			<xsd:documentation>Określenie celu złożenia JPK</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:byte">
+			<xsd:enumeration value="1">
+				<xsd:annotation>
+					<xsd:documentation>złożenie JPK po raz pierwszy</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="JPK">
+		<xsd:annotation>
+			<xsd:documentation>Jednolity plik kontrolny dla wyciągu bankowego</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Naglowek" type="tns:TNaglowek">
+					<xsd:annotation>
+						<xsd:documentation>Nagłówek JPK_WB</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Podmiot1">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="IdentyfikatorPodmiotu" type="etd:TIdentyfikatorOsobyNiefizycznej">
+								<xsd:annotation>
+									<xsd:documentation>Dane identyfikujące podmiot</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="AdresPodmiotu" type="etd:TAdresPolski">
+								<xsd:annotation>
+									<xsd:documentation>Adres podmiotu</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="NumerRachunku">
+					<xsd:annotation>
+						<xsd:documentation>Numer IBAN rachunku, którego dotyczy wyciąg</xsd:documentation>
+					</xsd:annotation>
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:pattern value="[A-Z]{2}[0-9]{2}[0-9A-Z]{10,30}"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:element>
+				<xsd:element name="Salda">
+					<xsd:annotation>
+						<xsd:documentation>Salda wyciągu</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="SaldoPoczatkowe" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Saldo początkowe wyciągu</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="SaldoKoncowe" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Saldo końcowe wyciągu</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="WyciagWiersz" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Szczegółowe wiersze (zapisy) wyciągu bankowego</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="NumerWiersza" type="tns:TNaturalnyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Kolejny numer wiersza (zapisu) wyciągu</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="DataOperacji" type="etd:TData">
+								<xsd:annotation>
+									<xsd:documentation>Data operacji</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="NazwaPodmiotu" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Nazwa podmiotu będącego stroną operacji</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="OpisOperacji" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Opis operacji/transakcji</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KwotaOperacji" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Kwota operacji</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="SaldoOperacji" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Saldo operacji</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="typ" use="required" fixed="G"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="WyciagCtrl">
+					<xsd:annotation>
+						<xsd:documentation>Sumy kontrolne dla wyciągu bankowego</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="LiczbaWierszy" type="tns:TNaturalnyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Liczba wierszy wyciągu bankowego, w okresie którego dotyczy wyciąg</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="SumaObciazen" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Suma kwot obciążeń rachunku w okresie, którego dotyczy wyciąg</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="SumaUznan" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Suma kwot uznań rachunku w okresie, którego dotyczy wyciąg</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

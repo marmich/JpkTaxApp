@@ -1,0 +1,400 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:etd="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/" xmlns:kck="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2013/05/23/eD/KodyCECHKRAJOW/" xmlns:tns="http://jpk.mf.gov.pl/wzor/2016/03/09/03091/" targetNamespace="http://jpk.mf.gov.pl/wzor/2016/03/09/03091/" elementFormDefault="qualified" attributeFormDefault="unqualified" xml:lang="pl">
+	<xsd:import namespace="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/" schemaLocation="StrukturyDanych_v4-0E.xsd"/>
+	<xsd:import namespace="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2013/05/23/eD/KodyCECHKRAJOW/" schemaLocation="KodyCechKrajow_v3-0E.xsd"/>
+	<xsd:simpleType name="TKodFormularza">
+		<xsd:annotation>
+			<xsd:documentation>Symbol wzoru formularza</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="JPK_KR"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TCelZlozenia">
+		<xsd:annotation>
+			<xsd:documentation>Określenie celu złożenia JPK</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:byte">
+			<xsd:enumeration value="1">
+				<xsd:annotation>
+					<xsd:documentation>złożenie JPK po raz pierwszy</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="TNaglowek">
+		<xsd:annotation>
+			<xsd:documentation>Nagłówek JPK_KR</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="KodFormularza">
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="tns:TKodFormularza">
+							<xsd:attribute name="kodSystemowy" type="xsd:string" use="required" fixed="JPK_KR (1)"/>
+							<xsd:attribute name="wersjaSchemy" type="xsd:string" use="required" fixed="1-0"/>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="WariantFormularza">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:byte">
+						<xsd:enumeration value="1"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="CelZlozenia" type="tns:TCelZlozenia"/>
+			<xsd:element name="DataWytworzeniaJPK" type="etd:TDataCzas">
+				<xsd:annotation>
+					<xsd:documentation>Data i czas wytworzenia JPK_KR</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DataOd" type="etd:TData">
+				<xsd:annotation>
+					<xsd:documentation>Data początkowa okresu, którego dotyczy JPK_KR</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DataDo" type="etd:TData">
+				<xsd:annotation>
+					<xsd:documentation>Data końcowa okresu, którego dotyczy JPK_KR</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DomyslnyKodWaluty" type="kck:currCode_Type">
+				<xsd:annotation>
+					<xsd:documentation>Trzyliterowy kod lokalnej waluty (ISO-4217), domyślny dla wytworzonego JPK_KR</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="KodUrzedu" type="etd:TKodUS"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="TKwotowy">
+		<xsd:annotation>
+			<xsd:documentation>Wartość numeryczna 18 znaków max, w tym 2 znaki po przecinku</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:decimal">
+			<xsd:totalDigits value="18"/>
+			<xsd:fractionDigits value="2"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TNaturalnyJPK">
+		<xsd:annotation>
+			<xsd:documentation>Liczby naturalne większe od zera</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="etd:TNaturalny">
+			<xsd:minExclusive value="0"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TZnakowyJPK">
+		<xsd:annotation>
+			<xsd:documentation>Typ znakowy ograniczony do 256 znaków</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="256"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="JPK">
+		<xsd:annotation>
+			<xsd:documentation>Jednolity plik kontrolny dla ksiąg rachunkowych</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Naglowek" type="tns:TNaglowek">
+					<xsd:annotation>
+						<xsd:documentation>Nagłówek JPK_KR</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Podmiot1">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="IdentyfikatorPodmiotu" type="etd:TIdentyfikatorOsobyNiefizycznej">
+								<xsd:annotation>
+									<xsd:documentation>Dane identyfikujące podmiot</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="AdresPodmiotu" type="etd:TAdresPolski">
+								<xsd:annotation>
+									<xsd:documentation>Adres podmiotu</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="ZOiS" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Zestawienie obrotów i sald</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="KodKonta" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Identyfikator konta ostatecznego zapisu (konta pomocniczego lub konta księgi głównej, jeżeli nie jest wymagany zapis na kontach pomocniczych)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="OpisKonta" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Nazwa konta</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="TypKonta" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Typ konta (bilansowe, pozabilansowe, rozliczeniowe lub wynikowe)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KodZespolu" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Kod zespołu kont wg Wykazu Kont Syntetycznych (kont księgi głównej)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="OpisZespolu" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Opis zespołu kont</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KodKategorii" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Kod kategorii konta według Zespołu Kont Syntetycznych (kont księgi głównej)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="OpisKategorii" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Nazwa kategorii konta</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KodPodkategorii" type="tns:TZnakowyJPK" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>Kod podkategorii konta ksiąg pomocniczych w ramach poszczególnej kategorii Zespołu Kont Syntetycznych</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="OpisPodkategorii" type="tns:TZnakowyJPK" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>Nazwa podkategorii konta</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="BilansOtwarciaWinien" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Bilans otwarcia po stronie Winien w walucie polskiej</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="BilansOtwarciaMa" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Bilans otwarcia po stronie Ma w walucie polskiej</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="ObrotyWinien" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Obroty konta po stronie Winien, w okresie którego dotyczy JPK</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="ObrotyMa" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Obroty konta po stronie Ma, w okresie którego dotyczy JPK</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="ObrotyWinienNarast" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Obroty konta po stronie Winien, w okresie od otwarcia ksiąg do daty końcowej okresu, którego dotyczy JPK</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="ObrotyMaNarast" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Obroty konta po stronie Ma, w okresie od otwarcia ksiąg do daty końcowej okresu, którego dotyczy JPK</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="SaldoWinien" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Saldo po stronie Winien w walucie polskiej na datę końcową okresu, którego dotyczy JPK z uwzględnieniem bilansu otwarcia</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="SaldoMa" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Saldo po stronie Ma w walucie polskiej na datę końcową okresu, którego dotyczy JPK z uwzlędnieniem bilansu otwarcia</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="typ" use="required" fixed="G"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="Dziennik" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Dziennik</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="LpZapisuDziennika" type="tns:TNaturalnyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Numer kolejny zapisu dziennika</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="NrZapisuDziennika" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Numer zapisu w dzienniku</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="OpisDziennika" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Opis dziennika</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="NrDowoduKsiegowego" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Numer dowodu księgowego (faktury, PK itp.)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="RodzajDowodu" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Rodzaj dowodu księgowego (np. faktura, PK, zestawienie, wyciąg bankowy, raport kasowy, raport okresowy z kasy fiskalnej, zamknięcia kont, przeksięgowania techniczne i inne)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="DataOperacji" type="etd:TData">
+								<xsd:annotation>
+									<xsd:documentation>Data dokonania operacji gospodarczej (np. data sprzedaży, zakupu)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="DataDowodu" type="etd:TData">
+								<xsd:annotation>
+									<xsd:documentation>Data sporządzenia dowodu księgowego</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="DataKsiegowania" type="etd:TData">
+								<xsd:annotation>
+									<xsd:documentation>Data, pod którą ujęto dowód w księgach</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KodOperatora" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Dane pozwalające na ustalenie osoby odpowiedzialnej za treść zapisu</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="OpisOperacji" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Opis operacji w dzienniku</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="DziennikKwotaOperacji" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Wartość operacji ujęta w Dzienniku</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="typ" use="required" fixed="G"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="DziennikCtrl">
+					<xsd:annotation>
+						<xsd:documentation>Sumy kontrolne dla tabeli Dziennik</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="LiczbaWierszyDziennika" type="tns:TNaturalnyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Liczba wierszy Dziennika</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="SumaKwotOperacji" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Suma wartości kwot operacji - (elementu KwotaOperacji)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="KontoZapis" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Zapisy na kontach księgi głównej i ksiąg pomocniczych</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="LpZapisu" type="tns:TNaturalnyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Numer kolejny zapisu konta</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="NrZapisu" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Numer (kod) zapisu na koncie pozwalający na jego powiązanie z zapisem w Dzienniku (identyczny z elementem NrZapisuDziennika)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KodKontaWinien" type="tns:TZnakowyJPK" default="null">
+								<xsd:annotation>
+									<xsd:documentation>Identyfikator konta zapisu (konta pomocniczego lub konta księgi głównej, jeżeli nie jest wymagany zapis na kontach pomocniczych) dla zapisu po stronie Winien</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KwotaWinien" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Kwota zapisu transakcji po stronie Winien</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KwotaWinienWaluta" type="tns:TKwotowy" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>Kwota zapisu transakcji po stronie Winien w walucie obcej dla operacji walutowych</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KodWalutyWinien" type="kck:currCode_Type" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>Kod waluty dla operacji walutowych dla księgowań po stronie Winien</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="OpisZapisuWinien" type="tns:TZnakowyJPK" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>Opis zapisu transakcji po stronie Winien</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KodKontaMa" type="tns:TZnakowyJPK" default="null">
+								<xsd:annotation>
+									<xsd:documentation>Identyfikator konta zapisu (konta pomocniczego lub konta księgi głównej, jeżeli nie jest wymagany zapis na kontach pomocniczych) dla zapisu po stronie Ma</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KwotaMa" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Kwota zapisu transakcji po stronie Ma</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KwotaMaWaluta" type="tns:TKwotowy" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>Kwota zapisu transakcji po stronie Ma w walucie obcej dla operacji walutowych</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="KodWalutyMa" type="kck:currCode_Type" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>Kod waluty dla operacji walutowych księgowanych po stronie Ma</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="OpisZapisuMa" type="tns:TZnakowyJPK" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>Opis zapisu transakcji po stronie Ma</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="typ" use="required" fixed="G"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="KontoZapisCtrl">
+					<xsd:annotation>
+						<xsd:documentation>Sumy kontrolne dla tabeli KontoZapis</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="LiczbaWierszyKontoZapisj" type="tns:TNaturalnyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Liczba zapisów tabeli KontoZapis</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="SumaWinien" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Suma wartości wierszy (zapisów) po stronie Winien (elementu KwotaWinien)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="SumaMa" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Suma wartości wierszy (zapisów) po stronie Ma (elementu KwotaMa)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

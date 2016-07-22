@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:etd="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/" xmlns:kck="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2013/05/23/eD/KodyCECHKRAJOW/" xmlns:tns="http://jpk.mf.gov.pl/wzor/2016/03/09/03097/" targetNamespace="http://jpk.mf.gov.pl/wzor/2016/03/09/03097/" elementFormDefault="qualified" attributeFormDefault="unqualified" xml:lang="pl">
+	<xsd:import namespace="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/" schemaLocation="StrukturyDanych_v4-0E.xsd"/>
+	<xsd:import namespace="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2013/05/23/eD/KodyCECHKRAJOW/" schemaLocation="KodyCechKrajow_v3-0E.xsd"/>
+	<xsd:simpleType name="TKodFormularza">
+		<xsd:annotation>
+			<xsd:documentation>Symbol wzoru formularza</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="JPK_EWP"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TCelZlozenia">
+		<xsd:annotation>
+			<xsd:documentation>Określenie celu złożenia JPK</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:byte">
+			<xsd:enumeration value="1">
+				<xsd:annotation>
+					<xsd:documentation>złożenie JPK po raz pierwszy</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="TNaglowek">
+		<xsd:annotation>
+			<xsd:documentation>Nagłówek JPK_EWP</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="KodFormularza">
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="tns:TKodFormularza">
+							<xsd:attribute name="kodSystemowy" type="xsd:string" use="required" fixed="JPK_EWP (1)"/>
+							<xsd:attribute name="wersjaSchemy" type="xsd:string" use="required" fixed="1-0"/>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="WariantFormularza">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:byte">
+						<xsd:enumeration value="1"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="CelZlozenia" type="tns:TCelZlozenia"/>
+			<xsd:element name="DataWytworzeniaJPK" type="etd:TDataCzas">
+				<xsd:annotation>
+					<xsd:documentation>Data i czas wytworzenia JPK_EWP</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DataOd" type="etd:TData">
+				<xsd:annotation>
+					<xsd:documentation>Data początkowa okresu, którego dotyczy JPK_EWP</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DataDo" type="etd:TData">
+				<xsd:annotation>
+					<xsd:documentation>Data końcowa okresu, którego dotyczy JPK_EWP</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DomyslnyKodWaluty" type="kck:currCode_Type">
+				<xsd:annotation>
+					<xsd:documentation>Trzyliterowy kod lokalnej waluty (ISO-4217), domyślny dla wytworzonego JPK_EWP</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="KodUrzedu" type="etd:TKodUS"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="TKwotowy">
+		<xsd:annotation>
+			<xsd:documentation>Wartość numeryczna 18 znaków max, w tym 2 znaki po przecinku</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:decimal">
+			<xsd:totalDigits value="18"/>
+			<xsd:fractionDigits value="2"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TNaturalnyJPK">
+		<xsd:annotation>
+			<xsd:documentation>Liczby naturalne większe od zera</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="etd:TNaturalny">
+			<xsd:minExclusive value="0"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TZnakowyJPK">
+		<xsd:annotation>
+			<xsd:documentation>Typ znakowy ograniczony do 256 znaków</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="256"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="JPK">
+		<xsd:annotation>
+			<xsd:documentation>Jednolity plik kontrolny dla ewidencji przychodów</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Naglowek" type="tns:TNaglowek">
+					<xsd:annotation>
+						<xsd:documentation>Nagłówek JPK_EWP</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Podmiot1">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="IdentyfikatorPodmiotu" type="etd:TIdentyfikatorOsobyNiefizycznej">
+								<xsd:annotation>
+									<xsd:documentation>Dane identyfikujące podmiot</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="AdresPodmiotu" type="etd:TAdresPolski">
+								<xsd:annotation>
+									<xsd:documentation>Adres podmiotu</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="EWPWiersz" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Na podstawie załącznika do rozporządzenia Ministra Finansów z dnia 17 grudnia 2002 r. w sprawie prowadzenia ewidencji przychodów i wykazu środków trwałych oraz wartości niematerialnych i prawnych (Dz.U. z 2014 r. poz. 701)</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="K_1" type="tns:TNaturalnyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Lp.</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="K_2" type="etd:TData">
+								<xsd:annotation>
+									<xsd:documentation>Data wpisu</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="K_3" type="etd:TData">
+								<xsd:annotation>
+									<xsd:documentation>Data uzyskania przychodu</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="K_4" type="tns:TZnakowyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Nr dowodu, na podstawie którego dokonano wpisu</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="K_5" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Kwota przychodu opodatkowana wg stawki 20%</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="K_6" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Kwota przychodu opodatkowana wg stawki 17%</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="K_7" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Kwota przychodu opodatkowana wg stawki 8,5%</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="K_8" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Kwota przychodu opodatkowana wg stawki 5,5%</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="K_9" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Kwota przychodu opodatkowana wg stawki 3,0%</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="K_10" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Ogółem przychody (5+6+7+8+9)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="K_11" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Kwota przychodu opodatkowana wg stawki 10%</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="K_12" type="etd:TData" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>Uwagi - Podatnicy, którzy zamierzają skorzystać z przewidzianej w art.21 ust.1a ustawy możliwości kwartalnego wpłacania ryczałtu od przychodów ewidencjonowanych, w kolumnie "Uwagi" mogą wpisywać datę otrzymania przychodu.</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="typ" use="required" fixed="G"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="EWPCtrl">
+					<xsd:annotation>
+						<xsd:documentation>Sumy kontrolne dla tabeli EWPWiersz</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="LiczbaWierszy" type="tns:TNaturalnyJPK">
+								<xsd:annotation>
+									<xsd:documentation>Liczba wierszy (zapisów) ewidencji przychodów, w okresie którego dotyczy JPK_EWP</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="SumaPrzychodow" type="tns:TKwotowy">
+								<xsd:annotation>
+									<xsd:documentation>Łączna wartość przychodów (kol.10) w ewidencji przychodów w okresie, którego dotyczy JPK_EWP</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
