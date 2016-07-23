@@ -6,8 +6,10 @@
         <artifactId>JpkTaxApp</artifactId>
         <version>1.0</version>
     </parent>
+    <groupId>pl.gov.mf.jpk.jpktaxapp</groupId>
     <artifactId>JpkSignApp</artifactId>
     <packaging>jar</packaging>
+    <version>1.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -50,4 +52,65 @@
             <version>1.6.6</version>
         </dependency>
     </dependencies>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <directory>target</directory>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <outputDirectory>target/classes</outputDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>pl/gov/mf/jpk/jpksignapp/resources/jpk.jks</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>pl/gov/mf/jpk/jpksignapp/resources/jpk.jks</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>pl.gov.mf.jpk.jpksignapp.Main</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <Built-By>JpkTaxApp</Built-By>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
