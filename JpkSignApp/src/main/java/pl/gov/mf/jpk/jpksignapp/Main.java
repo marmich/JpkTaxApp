@@ -16,10 +16,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Properties;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import org.apache.commons.io.IOUtils;
 import pl.gov.mf.jpk.jpksignapp.util.JKSTool;
 
@@ -30,15 +35,27 @@ public class Main
 
     public static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
+    public static String APP_NAME;
+    public static String APP_TITLE;
+    public static String APP_VERSION;
+    
+    public static File appDir = null;
+    public static File appHome = null;
+    
+    public static FileHandler fileHandler = null;
+    public static FileHandler dailyHandler = null;
+    
     public static void main(String[] args)
     {
+        Main.init();
+        
         File file;
 
         ArrayList<File> files = new ArrayList();
-
+        
         if ((args.length == 0) || (args[0] == null))
         {
-            System.out.println("XML file name is required!");
+            LOGGER.log(Level.SEVERE, "Any file as argument is required!");
 
             return;
         }
@@ -52,7 +69,7 @@ public class Main
 
                 if (!file.exists())
                 {
-                    System.out.println("Cannot find file " + args[0]);
+                    LOGGER.log(Level.SEVERE, "Cannot find file {0}", args[0]);
 
                     return;
                 }
@@ -80,7 +97,6 @@ public class Main
         }
     }
 
-    //public void signXmlDocumentJks(File file, URL url, String key, String alias, String pwd)
     public void signXmlDocumentJks(File file)
     {
         InputStream jksFile = null;
@@ -92,6 +108,8 @@ public class Main
 
         try
         {
+            LOGGER.log(Level.INFO, "Processing file: {0}\n", file.getAbsolutePath());
+            
             jksFile = Main.class.getResourceAsStream("resources/jpk.jks");
 
             JKSSignatureToken signingToken = new JKSSignatureToken(jksFile, password);
@@ -134,10 +152,12 @@ public class Main
             }
 
             IOUtils.copy(signedDocument.openStream(), xadesFile);
+            
+            LOGGER.log(Level.INFO, "Successfully finished!");
         }
         catch (NullPointerException | DSSException | IOException ex)
         {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
         }
         finally
         {
@@ -149,7 +169,7 @@ public class Main
                 }
                 catch (IOException ex)
                 {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
                 }
             }
 
@@ -161,9 +181,82 @@ public class Main
                 }
                 catch (IOException ex)
                 {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
                 }
             }
+        }
+    }
+    
+    public static void init()
+    {
+        try
+        {
+            System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT [%4$-7s] %5$s%6$s%n");
+            
+            Properties properties = new Properties();
+            
+            properties.load(Main.class.getResourceAsStream("resources/application.properties"));
+            
+            APP_NAME = properties.getProperty("app.name");
+            APP_TITLE = properties.getProperty("app.title");
+            APP_VERSION = properties.getProperty("app.version");
+            
+            appDir = new File(System.getProperty("user.home") + File.separator + "." + APP_NAME);
+            
+            if (!appDir.exists())
+            {
+                if (!appDir.mkdir())
+                {
+                    LOGGER.log(Level.SEVERE, "Cannot create directory {0}", appDir.getAbsolutePath());
+                }
+            }
+            
+            appHome = new File(appDir.getAbsolutePath() + File.separator + APP_VERSION);
+            
+            if (!appHome.exists())
+            {
+                if (!appHome.mkdir())
+                {
+                    LOGGER.log(Level.SEVERE, "Cannot create directory {0}", appHome.getAbsolutePath());
+                }
+            }
+            
+            dailyHandler = new FileHandler(appHome + File.separator + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".log", true);
+        
+            dailyHandler.setFormatter(new SimpleFormatter());
+
+            Main.configureLogger(Main.LOGGER);
+        }
+        catch (IOException ex)
+        {
+            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+    }
+    
+    private static void configureLogger(Logger logger)
+    {
+        for (Handler handler: logger.getHandlers())
+        {
+            logger.removeHandler(handler);
+            
+            handler.close();
+        }
+
+        logger.addHandler(dailyHandler);
+
+        logger.setLevel(Level.ALL);
+    }
+    
+    public static void closeHandlers()
+    {
+        if (Main.fileHandler != null)
+        {
+            Main.fileHandler.close();
+        }
+        
+        if (Main.dailyHandler != null)
+        {
+            Main.dailyHandler.close();
         }
     }
 }
