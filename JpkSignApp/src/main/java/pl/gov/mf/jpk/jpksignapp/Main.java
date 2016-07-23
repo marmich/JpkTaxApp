@@ -86,19 +86,19 @@ public class Main
         InputStream jksFile = null;
         FileOutputStream xadesFile = null;
         
-        String key =  "jpk1234";
+        String password =  "password";
         String alias = "jpk";
-        String password = "jpkkey1234";
+        String key = "jpkkey";
 
         try
         {
             jksFile = Main.class.getResourceAsStream("resources/jpk.jks");
 
-            JKSSignatureToken signingToken = new JKSSignatureToken(jksFile, key);
+            JKSSignatureToken signingToken = new JKSSignatureToken(jksFile, password);
 
-            JKSTool jks = new JKSTool(Main.class.getResource("resources/jpk.jks"), key.toCharArray());
+            JKSTool jks = new JKSTool(Main.class.getResource("resources/jpk.jks"), password.toCharArray());
 
-            KSPrivateKeyEntry privateKey = jks.getPrivateKey(alias, password);
+            KSPrivateKeyEntry privateKey = jks.getPrivateKey(alias, key);
 
             DSSDocument toBeSigned = new FileDocument(file);
 
