@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.CodeSource;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,6 +44,7 @@ public class Main
     
     public static File appDir = null;
     public static File appHome = null;
+    public static File appLocus = null;
     
     public static FileHandler fileHandler = null;
     public static FileHandler dailyHandler = null;
@@ -592,8 +595,14 @@ public class Main
             Main.configureLogger(Main.LOGGER);
             
             Main.configureLogger(WinApp.LOGGER);
+            
+            CodeSource codeSource = Main.class.getProtectionDomain().getCodeSource();
+            
+            File jarFile = new File(codeSource.getLocation().toURI().getPath());
+            
+            appLocus = jarFile.getParentFile();
         }
-        catch (IOException ex)
+        catch (IOException | URISyntaxException ex)
         {
             Logger.getLogger(WinApp.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
         }

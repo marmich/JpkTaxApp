@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.XMLConstants;
@@ -92,7 +94,7 @@ public class XmlUtil
                 
         try
         {
-            xsdFile = new File(Main.class.getResource("resources/xsd/Schemat_" + this.systemCode.replace(" ", "") + "_v" + this.schemaVersion + ".xsd").getFile());
+            xsdFile = new File(Main.appLocus + File.separator + "xsd" + File.separator +"Schemat_" + this.systemCode.replace(" ", "") + "_v" + this.schemaVersion + ".xsd");
             
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = factory.newSchema(xsdFile);
