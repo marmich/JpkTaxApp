@@ -492,11 +492,18 @@ public class Main
 
             Main.LOGGER.log(Level.INFO, "Szyfrowanie klucza szyfrującego\n");
 
-            rsaUtil = new RsaUtil(Main.class.getResourceAsStream("/pl/gov/mf/jpk/jpkinitapp/resources/JPKMFTest-klucz publiczny do szyfrowania.crt"));
+            if (ReleaseMode.PRD == Main.APP_RELEASE_MODE)
+            {
+                rsaUtil = new RsaUtil(Main.class.getResourceAsStream("/pl/gov/mf/jpk/jpkinitapp/resources/prd/3af5843ae11db6d94edf0ea502b5cd1a.crt"));
+            }
+            else
+            {
+                rsaUtil = new RsaUtil(Main.class.getResourceAsStream("/pl/gov/mf/jpk/jpkinitapp/resources/tst/356e5db89ef1b6f9b0779a8e6e64dd96.crt"));
+            }
 
             rsaUtil.encrypt(aesUtil.getKey());
 
-            jaxbUtil = new JaxbUtil(jpkFile, xmlUtil, rsaUtil, aesUtil, digestJpkSha);
+            jaxbUtil = new JaxbUtil(Main.APP_RELEASE_MODE, jpkFile, xmlUtil, rsaUtil, aesUtil, digestJpkSha);
             
             Main.LOGGER.log(Level.INFO, "Generowanie pliku metadanych\n");
 

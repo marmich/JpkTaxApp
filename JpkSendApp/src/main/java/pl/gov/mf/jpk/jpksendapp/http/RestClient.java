@@ -7,9 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,16 +74,6 @@ public class RestClient
 
     public RestClient(ReleaseMode releaseMode, Handler[] handlers)
     {
-        Calendar test = GregorianCalendar.getInstance();
-
-        test.set(2016, 6, 30);
-
-        if ((ReleaseMode.TST == releaseMode)
-            && (new Date().before(test.getTime())))
-        {
-            this.JPK_URL_HOST = RestClient.JPK_URL_PRD;
-        }
-        else
         if (ReleaseMode.PRD == releaseMode)
         {
             this.JPK_URL_HOST = RestClient.JPK_URL_PRD;

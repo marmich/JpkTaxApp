@@ -472,11 +472,6 @@ public class WinApp extends JFrame
             finally
             {
                 closeFileMenuItem.setEnabled(true);
-
-                if (Main.APP_RELEASE_LEVEL != Main.ReleaseLevel.TST)
-                {
-                    modeToggleButton.setEnabled(true);
-                }
             }
         }
     }

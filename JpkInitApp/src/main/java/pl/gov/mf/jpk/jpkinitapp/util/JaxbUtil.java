@@ -1,6 +1,7 @@
 package pl.gov.mf.jpk.jpkinitapp.util;
 
 import java.io.File;
+import java.net.URL;
 import java.util.logging.Level;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -11,6 +12,7 @@ import javax.xml.namespace.QName;
 import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
 import pl.gov.mf.jpk.jpkinitapp.Main;
+import pl.gov.mf.jpk.jpkinitapp.Main.ReleaseMode;
 import pl.gov.mf.jpk.jpkinitapp.jaxb.ArrayOfDocumentType;
 import pl.gov.mf.jpk.jpkinitapp.jaxb.ArrayOfDocumentType.Document;
 import pl.gov.mf.jpk.jpkinitapp.jaxb.ArrayOfFileSignatureType.Encryption;
@@ -43,19 +45,30 @@ public class JaxbUtil
     private RsaUtil rsaUtil = null;
     private AesUtil aesUtil = null;
     private DigestUtil digestJpkSha = null;
+    
+    private URL schemaURL = null;
     private InitUploadType initUpload;
 
     private JaxbUtil()
     {
     }
 
-    public JaxbUtil(File jpkFile, XmlUtil xmlUtil, RsaUtil rsaUtil, AesUtil aesUtil, DigestUtil digestJpkSha)
+    public JaxbUtil(ReleaseMode releaseMode, File jpkFile, XmlUtil xmlUtil, RsaUtil rsaUtil, AesUtil aesUtil, DigestUtil digestJpkSha)
     {
         this.jpkFile = jpkFile;
         this.xmlUtil = xmlUtil;
         this.rsaUtil = rsaUtil;
         this.aesUtil = aesUtil;
         this.digestJpkSha = digestJpkSha;
+        
+        if (ReleaseMode.PRD == releaseMode)
+        {
+            this.schemaURL = Main.class.getResource("/pl/gov/mf/jpk/jpkinitapp/resources/prd/initupload.xsd");
+        }
+        else
+        {
+            this.schemaURL = Main.class.getResource("/pl/gov/mf/jpk/jpkinitapp/resources/tst/initupload.xsd");
+        }
         
         this.jpkMeta = new File(jpkFile.getParent() + File.separator + JAXB_NAME + Main.JPK_FILE_DOT_EXT);
     }
@@ -210,7 +223,7 @@ public class JaxbUtil
 
             if (validate)
             {
-                marshaller.setSchema(SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(Main.class.getResource("/pl/gov/mf/jpk/jpkinitapp/resources/initupload.xsd")));
+                marshaller.setSchema(SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(this.schemaURL));
             }
             
             marshaller.marshal(jaxbObject, this.jpkMeta);

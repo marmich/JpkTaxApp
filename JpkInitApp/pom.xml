@@ -44,15 +44,16 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
-                <excludes>
-                    <exclude>pl/gov/mf/jpk/jpkinitapp/resources/JPKMFTest-klucz publiczny do szyfrowania.crt</exclude>
-                </excludes>
+                <includes>
+                    <include>pl/gov/mf/jpk/jpkinitapp/resources/application.properties</include>
+                </includes>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
                 <includes>
-                    <include>pl/gov/mf/jpk/jpkinitapp/resources/JPKMFTest-klucz publiczny do szyfrowania.crt</include>
+                    <include>pl/gov/mf/jpk/jpkinitapp/resources/tst/*</include>
+                    <include>pl/gov/mf/jpk/jpkinitapp/resources/prd/*</include>
                 </includes>
             </resource>
         </resources>
@@ -131,7 +132,7 @@
                 </executions>
                 <configuration>
                     <sources>
-                        <source>src/main/resources/pl/gov/mf/jpk/jpkinitapp/resources/initupload.xsd</source>
+                        <source>src/main/resources/pl/gov/mf/jpk/jpkinitapp/resources/prd/initupload.xsd</source>
                     </sources>
                     <packageName>pl.gov.mf.jpk.jpkinitapp.jaxb</packageName>
                 </configuration>            
