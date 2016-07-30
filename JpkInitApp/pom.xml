@@ -14,6 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <app.name>JpkInit</app.name>
+        <app.title>Kompresowanie, dzielenie i szyfrowanie JPK</app.title>
     </properties>
     <dependencies>
         <dependency>
@@ -139,4 +141,74 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>devel</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <app.profile.id>dev</app.profile.id>
+                <app.release.mode>TST</app.release.mode>
+                <app.release.level>PRD</app.release.level>
+                <app.split.file.size.min>60</app.split.file.size.min>
+                <app.validate.xml>false</app.validate.xml>
+                <app.debug>true</app.debug>
+            </properties>
+            <build>
+                <filters>
+                    <filter>src/main/assembly/${app.profile.id}.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.6</version>
+                        <configuration>
+                            <filters>
+                                <filter>src/main/assembly/${app.profile.id}.properties</filter>
+                            </filters>
+                            <descriptors>
+                                <descriptor>src/main/assembly/win-dir.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <app.profile.id>prd</app.profile.id>
+                <app.release.mode>TST</app.release.mode>
+                <app.release.level>PRD</app.release.level>
+                <app.split.file.size.min>60</app.split.file.size.min>
+                <app.validate.xml>true</app.validate.xml>
+                <app.debug>false</app.debug>
+            </properties>
+            <build>
+                <filters>
+                    <filter>src/main/assembly/${app.profile.id}.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.6</version>
+                        <configuration>
+                            <filters>
+                                <filter>src/main/assembly/${app.profile.id}.properties</filter>
+                            </filters>
+                            <descriptors>
+                                <descriptor>src/main/assembly/win-zip.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

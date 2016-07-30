@@ -121,9 +121,9 @@ public class Main
 
                     APP_DEBUG = Boolean.valueOf(properties.getProperty("app.debug"));
                     
-                    XML_VALIDATE = Boolean.valueOf(properties.getProperty("xml.validate"));
+                    XML_VALIDATE = Boolean.valueOf(properties.getProperty("app.validate.xml"));
 
-                    SPLIT_FILE_SIZE_MIN = Byte.valueOf(properties.getProperty("split.file.size.min"));
+                    SPLIT_FILE_SIZE_MIN = Byte.valueOf(properties.getProperty("app.split.file.size.min"));
                 }
             }
             
@@ -285,7 +285,7 @@ public class Main
             }
             else
             {
-                Main.LOGGER.log(Level.INFO, "Przetwarzanie dokumentu: {1}\n", jpkFile.getName());
+                Main.LOGGER.log(Level.INFO, "Przetwarzanie dokumentu: {0}\n", jpkFile.getName());
             }
 
             File temp = new File(jpkFile.getParent() + File.separator + jpkFile.getName().substring(0, jpkFile.getName().length() - JPK_FILE_DOT_EXT.length()));
@@ -544,9 +544,9 @@ public class Main
             
             APP_DEBUG = Boolean.valueOf(properties.getProperty("app.debug"));
             
-            XML_VALIDATE = Boolean.valueOf(properties.getProperty("xml.validate"));
+            XML_VALIDATE = Boolean.valueOf(properties.getProperty("app.validate.xml"));
             
-            SPLIT_FILE_SIZE_MIN = Byte.valueOf(properties.getProperty("split.file.size.min"));
+            SPLIT_FILE_SIZE_MIN = Byte.valueOf(properties.getProperty("app.split.file.size.min"));
             
             String appReleaseMode = properties.getProperty("app.release.mode");
             
