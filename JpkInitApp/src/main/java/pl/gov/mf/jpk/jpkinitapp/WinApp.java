@@ -19,6 +19,7 @@ import javax.swing.JTextArea;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.DefaultCaret;
 import pl.gov.mf.jpk.jpkinitapp.Main.ReleaseMode;
+import pl.gov.mf.jpk.jpkinitapp.util.JKSTool;
 
 /**
  *
@@ -46,7 +47,7 @@ public class WinApp extends JFrame
         
         ((DefaultCaret) textArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         
-        if (Main.APP_RELEASE_LEVEL == Main.ReleaseLevel.TST)
+        if (Main.APP_RELEASE_LEVEL != Main.ReleaseLevel.PRD)
         {
             modeToggleButton.setEnabled(false);
         }
@@ -267,7 +268,7 @@ public class WinApp extends JFrame
         
         if ((jpkFile != null) && (jpkFile.isFile()))
         {
-            new Perform(jpkFile).start();
+            new Perform(jpkFile, Main.jksTool).start();
         }
     }//GEN-LAST:event_performFileMenuItemActionPerformed
 
@@ -451,15 +452,17 @@ public class WinApp extends JFrame
     private class Perform extends Thread
     {
         private File jpkFile;
+        private JKSTool jksTool;
         
         private Perform()
         {
             
         }
         
-        public Perform(File jpkFile)
+        public Perform(File jpkFile, JKSTool jksTool)
         {
             this.jpkFile = jpkFile;
+            this.jksTool = jksTool;
         }
         
         @Override
@@ -467,7 +470,7 @@ public class WinApp extends JFrame
         {
             try
             {
-                Main.perform(this.jpkFile);
+                Main.perform(this.jpkFile, this.jksTool);
             }
             finally
             {

@@ -11,6 +11,7 @@ import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.logging.Level;
 import javax.crypto.Cipher;
@@ -38,6 +39,11 @@ public class RsaUtil
     public RsaUtil(InputStream crtStream)
     {
         this.publicKey = this.getCrtPublicKey(crtStream);
+    }
+    
+    public RsaUtil(X509Certificate cert)
+    {
+        this.publicKey = cert.getPublicKey();
     }
     
     public PublicKey getPublicKey()

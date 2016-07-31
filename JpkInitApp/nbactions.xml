@@ -50,8 +50,8 @@
             </packagings>
             <goals>
                 <goal>clean</goal>
-                <goal>install</goal>
                 <goal>assembly:assembly</goal>
             </goals>
         </action>
+        
     </actions>
