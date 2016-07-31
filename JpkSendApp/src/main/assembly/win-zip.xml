@@ -27,10 +27,5 @@
             <outputDirectory>/lib</outputDirectory>
             <filtered>false</filtered>
         </fileSet>
-        <fileSet>
-            <directory>target/xsd</directory>
-            <outputDirectory>/xsd</outputDirectory>
-            <filtered>false</filtered>
-        </fileSet>
     </fileSets>
 </assembly>

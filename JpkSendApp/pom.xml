@@ -11,6 +11,9 @@
     <packaging>jar</packaging>
     <version>1.0</version>
     <properties>
+        <app.id>JpkTax</app.id>
+        <app.name>JpkSend</app.name>
+        <app.title>Komunikacja z usługą JPK</app.title>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -80,4 +83,99 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>alpha</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <app.profile.id>dev</app.profile.id>
+                <app.release.mode>TST</app.release.mode>
+                <app.release.level>PRD</app.release.level>
+            </properties>
+            <build>
+                <filters>
+                    <filter>src/main/assembly/assembly.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.6</version>
+                        <configuration>
+                            <filters>
+                                <filter>src/main/assembly/assembly.properties</filter>
+                            </filters>
+                            <descriptors>
+                                <descriptor>src/main/assembly/win-dir.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>beta</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <app.profile.id>tst</app.profile.id>
+                <app.release.mode>TST</app.release.mode>
+                <app.release.level>TST</app.release.level>
+            </properties>
+            <build>
+                <filters>
+                    <filter>src/main/assembly/assembly.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.6</version>
+                        <configuration>
+                            <filters>
+                                <filter>src/main/assembly/assembly.properties</filter>
+                            </filters>
+                            <descriptors>
+                                <descriptor>src/main/assembly/win-zip.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <app.profile.id>prd</app.profile.id>
+                <app.release.mode>TST</app.release.mode>
+                <app.release.level>PRD</app.release.level>
+            </properties>
+            <build>
+                <filters>
+                    <filter>src/main/assembly/assembly.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.6</version>
+                        <configuration>
+                            <filters>
+                                <filter>src/main/assembly/assembly.properties</filter>
+                            </filters>
+                            <descriptors>
+                                <descriptor>src/main/assembly/win-zip.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
