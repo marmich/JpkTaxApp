@@ -13,11 +13,14 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.security.cert.X509Certificate;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.DefaultCaret;
+import static pl.gov.mf.jpk.jpkinitapp.Main.APP_JKS_ALIAS;
+import static pl.gov.mf.jpk.jpkinitapp.Main.APP_RELEASE_MODE;
 import pl.gov.mf.jpk.jpkinitapp.Main.ReleaseMode;
 import pl.gov.mf.jpk.jpkinitapp.util.JKSTool;
 
@@ -268,7 +271,18 @@ public class WinApp extends JFrame
         
         if ((jpkFile != null) && (jpkFile.isFile()))
         {
-            new Perform(jpkFile, Main.jksTool).start();
+            X509Certificate cert;
+            
+            if (ReleaseMode.PRD == Main.APP_RELEASE_MODE)
+            {
+                cert = Main.prdJKS.getCertificate(APP_JKS_ALIAS);
+            }
+            else
+            {
+                cert = Main.tstJKS.getCertificate(APP_JKS_ALIAS);
+            }
+            
+            new Perform(jpkFile, cert).start();
         }
     }//GEN-LAST:event_performFileMenuItemActionPerformed
 
@@ -452,17 +466,17 @@ public class WinApp extends JFrame
     private class Perform extends Thread
     {
         private File jpkFile;
-        private JKSTool jksTool;
+        private X509Certificate cert;
         
         private Perform()
         {
             
         }
         
-        public Perform(File jpkFile, JKSTool jksTool)
+        public Perform(File jpkFile, X509Certificate cert)
         {
             this.jpkFile = jpkFile;
-            this.jksTool = jksTool;
+            this.cert = cert;
         }
         
         @Override
@@ -470,7 +484,7 @@ public class WinApp extends JFrame
         {
             try
             {
-                Main.perform(this.jpkFile, this.jksTool);
+                Main.perform(this.jpkFile, this.cert);
             }
             finally
             {

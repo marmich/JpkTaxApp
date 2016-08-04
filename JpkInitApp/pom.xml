@@ -16,6 +16,7 @@
         <app.title>Kompresowanie, dzielenie i szyfrowanie JPK</app.title>
         <app.license>00000000-0000-0000-0000-000000000000</app.license>
         <app.license.pin>0000</app.license.pin>
+        <app.version.upgrade>true</app.version.upgrade>
         <app.jks.alias>jpk</app.jks.alias>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -64,6 +65,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
                 <includes>
+                    <include>pl/gov/mf/jpk/jpkinitapp/resources/keystore.tst</include>
                     <include>pl/gov/mf/jpk/jpkinitapp/resources/tst/*</include>
                     <include>pl/gov/mf/jpk/jpkinitapp/resources/prd/*</include>
                 </includes>
@@ -218,30 +220,6 @@
                             </descriptors>
                         </configuration>
                     </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>keytool-maven-plugin</artifactId>
-                        <version>1.5</version>
-                        <executions>
-                            <execution>
-                                <id>generate-keystore</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>generateKeyPair</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <keystore>${project.build.directory}/classes/pl/gov/mf/jpk/jpkinitapp/resources/keystore.jks</keystore>
-                            <dname>CN=JpkInitApp, OU=JpkTaxApp, O=JPK, L=Warsaw, ST=Poland, C=PL</dname>
-                            <alias>jpk</alias>
-                            <keyalg>RSA</keyalg>
-                            <keysize>2048</keysize>
-                            <validity>4096</validity>
-                            <keypass>${app.license.pin}${app.license.pin}</keypass>
-                            <storepass>${app.license}</storepass>
-                        </configuration>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -291,7 +269,8 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <keystore>${project.build.directory}/classes/pl/gov/mf/jpk/jpkinitapp/resources/keystore.jks</keystore>
+                            <skip>${app.version.upgrade}</skip>
+                            <keystore>${project.build.directory}/classes/pl/gov/mf/jpk/jpkinitapp/resources/keystore.prd</keystore>
                             <dname>CN=JpkInitApp, OU=JpkTaxApp, O=JPK, L=Warsaw, ST=Poland, C=PL</dname>
                             <alias>jpk</alias>
                             <keyalg>RSA</keyalg>

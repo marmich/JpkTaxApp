@@ -732,7 +732,7 @@ public class RestClient
 
                         jpkUpo = json.getString(jsonElement.name());
                         
-                        jpkUpo = jpkUpo.replace("&quot;", "\"");
+                        //jpkUpo = jpkUpo.replace("&quot;", "\"");
 
                         break;
 

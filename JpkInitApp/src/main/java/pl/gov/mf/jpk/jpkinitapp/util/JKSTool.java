@@ -55,25 +55,28 @@ public class JKSTool
 
     public X509Certificate getCertificate(String alias)
     {
-        try
+        if (this.keystore != null)
         {
-            Certificate cert = keystore.getCertificate(alias);
-
-            if (cert == null)
+            try
             {
-                return null;
-            }
+                Certificate cert = this.keystore.getCertificate(alias);
 
-            if (!(cert instanceof X509Certificate))
+                if (cert == null)
+                {
+                    return null;
+                }
+
+                if (!(cert instanceof X509Certificate))
+                {
+                    return null;
+                }
+
+                return (X509Certificate) cert;
+            }
+            catch (KeyStoreException ex)
             {
-                return null;
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
             }
-
-            return (X509Certificate) cert;
-        }
-        catch (KeyStoreException ex)
-        {
-            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
         }
 
         return null;
@@ -81,25 +84,32 @@ public class JKSTool
 
     public PrivateKeyEntry getPrivateKey(String certAlias, String password)
     {
-        try
+        if (this.keystore != null)
         {
-            final Key key = keystore.getKey(certAlias, password.toCharArray());
+            try
+            {
+                final Key key = this.keystore.getKey(certAlias, password.toCharArray());
 
-            if (key == null)
-            {
-                return null;
+                if (key == null)
+                {
+                    return null;
+                }
+                
+                if (!(key instanceof PrivateKey))
+                {
+                    return null;
+                }
+                
+                final Certificate[] certificateChain = keystore.getCertificateChain(certAlias);
+                
+                PrivateKeyEntry privateKey = new PrivateKeyEntry((PrivateKey) key, certificateChain);
+                
+                return privateKey;
             }
-            if (!(key instanceof PrivateKey))
+            catch (KeyStoreException | UnrecoverableKeyException | NoSuchAlgorithmException ex)
             {
-                return null;
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
             }
-            final Certificate[] certificateChain = keystore.getCertificateChain(certAlias);
-            KeyStore.PrivateKeyEntry privateKey = new KeyStore.PrivateKeyEntry((PrivateKey) key, certificateChain);
-            return privateKey;
-        }
-        catch (KeyStoreException | UnrecoverableKeyException | NoSuchAlgorithmException ex)
-        {
-            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
         }
 
         return null;

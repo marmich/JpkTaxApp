@@ -2,7 +2,6 @@ package pl.gov.mf.jpk.jpkinitapp;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -11,6 +10,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.security.CodeSource;
+import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,15 +43,20 @@ public class Main
     public static final String KEY_FILE_DOT_EXT = ".key";
     public static final String VEC_FILE_DOT_EXT = ".vec";
     
+    public static String APP_ISSUE;
+    public static String APP_ID;
     public static String APP_NAME;
     public static String APP_TITLE;
     public static String APP_VERSION;
     public static String APP_LICENSE;
+    public static String TST_LICENSE = "00000000-0000-0000-0000-000000000000";
     public static String APP_JKS_ALIAS;
     
     public static ReleaseMode APP_RELEASE_MODE;
     public static ReleaseLevel APP_RELEASE_LEVEL;
     
+    public static File dir = null;
+    public static File home = null;
     public static File appDir = null;
     public static File appHome = null;
     public static File appLocus = null;
@@ -69,7 +74,8 @@ public class Main
     public static byte SPLIT_FILE_SIZE_MIN = 60;
     public static final byte SPLIT_FILE_SIZE_MAX = 60;
     
-    public static JKSTool jksTool = null;
+    public static JKSTool tstJKS = null;
+    public static JKSTool prdJKS = null;
     
     public static void main(String[] args)
     {
@@ -140,10 +146,21 @@ public class Main
                     SPLIT_FILE_SIZE_MIN = Byte.valueOf(properties.getProperty("app.split.file.size.min"));
                 }
             }
+
+            X509Certificate cert;
+            
+            if (ReleaseMode.PRD == APP_RELEASE_MODE)
+            {
+                cert = Main.prdJKS.getCertificate(APP_JKS_ALIAS);
+            }
+            else
+            {
+                cert = Main.tstJKS.getCertificate(APP_JKS_ALIAS);
+            }
             
             for (File jpkFile: xmlFiles)
             {
-                Main.perform(jpkFile, Main.jksTool);
+                Main.perform(jpkFile, cert);
             }
             
             System.out.println(Main.LINE);
@@ -239,7 +256,7 @@ public class Main
         Main.LOGGER.log(Level.FINE, Main.LINE);
     }
     
-    public static synchronized void perform(File jpkFile, JKSTool jksTool)
+    public static synchronized void perform(File jpkFile, X509Certificate cert)
     {
         XmlUtil xmlUtil = null;
         RsaUtil rsaUtil = null;
@@ -457,8 +474,13 @@ public class Main
             if (ReleaseMode.PRD != APP_RELEASE_MODE)
             {
                 Main.LOGGER.log(Level.INFO, "Klucz: {0}", new String(aesUtil.getKey()));
-                Main.LOGGER.log(Level.INFO, "Wektor: {0}\n", new String(aesUtil.getVec()));
             }
+            else
+            {
+                Main.LOGGER.log(Level.INFO, "Klucz: ********************************");
+            }
+            
+            Main.LOGGER.log(Level.INFO, "Wektor: {0}\n", new String(aesUtil.getVec()));
             
             Main.LOGGER.log(Level.INFO, "Szyfrowanie archiwum\n");
                 
@@ -530,32 +552,29 @@ public class Main
 
             if (Main.COMPLETED)
             {
-                if (Main.jksTool != null)
+                File keyFile = new File(jpkFile.getParent() + File.separator + JaxbUtil.JAXB_NAME + KEY_FILE_DOT_EXT);
+
+                RsaUtil rsaTool = new RsaUtil(cert);
+
+                rsaTool.encrypt(aesUtil.getKey());
+
+                FileWriter writer = null;
+
+                try
                 {
-                    File keyFile = new File(jpkFile.getParent() + File.separator + digestJpkSha.getDigestHex() + KEY_FILE_DOT_EXT);
-                    
-                    RsaUtil rsaTool = new RsaUtil(jksTool.getCertificate(APP_JKS_ALIAS));
-                    
-                    rsaTool.encrypt(aesUtil.getKey());
-                    
-                    FileWriter writer = null;
-                    
-                    try
+                    writer = new FileWriter(keyFile);
+
+                    writer.write(rsaTool.getEncryptedKeyBase64());
+                }
+                catch (Exception ex)
+                {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+                }
+                finally
+                {
+                    if (writer != null)
                     {
-                        writer = new FileWriter(keyFile);
-                        
-                        writer.write(rsaTool.getEncryptedKeyBase64());
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-                    }
-                    finally
-                    {
-                        if (writer != null)
-                        {
-                            writer.close();
-                        }
+                        writer.close();
                     }
                 }
                 
@@ -601,6 +620,8 @@ public class Main
             
             properties.load(Main.class.getResourceAsStream("resources/application.properties"));
             
+            APP_ISSUE = properties.getProperty("app.issue");
+            APP_ID = properties.getProperty("app.id");
             APP_NAME = properties.getProperty("app.name");
             APP_TITLE = properties.getProperty("app.title");
             APP_VERSION = properties.getProperty("app.version");
@@ -613,6 +634,26 @@ public class Main
             XML_VALIDATE = Boolean.valueOf(properties.getProperty("app.validate.xml"));
             
             SPLIT_FILE_SIZE_MIN = Byte.valueOf(properties.getProperty("app.split.file.size.min"));
+            
+            dir = new File(System.getProperty("user.home") + File.separator + "." + APP_ID);
+            
+            if (!dir.exists())
+            {
+                if (!dir.mkdir())
+                {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Cannot create directory {0}", dir.getAbsolutePath());
+                }
+            }
+            
+            home = new File(dir.getAbsolutePath() + File.separator + APP_ISSUE);
+            
+            if (!home.exists())
+            {
+                if (!home.mkdir())
+                {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Cannot create directory {0}", home.getAbsolutePath());
+                }
+            }
             
             appDir = new File(System.getProperty("user.home") + File.separator + "." + APP_NAME);
             
@@ -650,38 +691,67 @@ public class Main
             
             appLocus = jarFile.getParentFile();
             
-            File appHomeJks = new File(appDir.getAbsolutePath() + File.separator + "keystore.jks");
+            File tstHomeJks = new File(home.getAbsolutePath() + File.separator + "keystore.tst");
             
-            if (!appHomeJks.exists())
+            if (!tstHomeJks.exists())
             {
-                InputStream input = Main.class.getResourceAsStream("resources/keystore.jks");
+                InputStream input = Main.class.getResourceAsStream("resources/keystore.tst");
                 
                 if (input != null)
                 {
-                    Files.copy(input, appHomeJks.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(input, tstHomeJks.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 
                     input.close();
                 }
             }
             
-            if (appHomeJks.exists() && appHomeJks.isFile())
+            if (tstHomeJks.exists() && tstHomeJks.isFile())
             {
-                jksTool = new JKSTool(appHomeJks.toURI().toURL(), APP_LICENSE.toCharArray());
-                
-                if (!jksTool.isInitiated())
+                tstJKS = new JKSTool(tstHomeJks.toURI().toURL(), TST_LICENSE.toCharArray());
+
+                if (!tstJKS.isInitiated())
                 {
                     Main.LOGGER.severe("Zainicjowanie magazynu klucza nie powiodło się!");
-                    
+
                     System.exit(0);
                 }
             }
             
-            File appHomeProp = new File(appDir.getAbsolutePath() + File.separator + "application.properties");
+            if (!TST_LICENSE.equals(APP_LICENSE))
+            {
+                File prdHomeJks = new File(home.getAbsolutePath() + File.separator + "keystore.prd");
+
+                if (!prdHomeJks.exists())
+                {
+                    InputStream input = Main.class.getResourceAsStream("resources/keystore.prd");
+
+                    if (input != null)
+                    {
+                        Files.copy(input, prdHomeJks.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                        input.close();
+                    }
+                }
+
+                if (prdHomeJks.exists() && prdHomeJks.isFile())
+                {
+                    prdJKS = new JKSTool(prdHomeJks.toURI().toURL(), APP_LICENSE.toCharArray());
+
+                    if (!prdJKS.isInitiated())
+                    {
+                        Main.LOGGER.severe("Zainicjowanie magazynu klucza nie powiodło się!");
+
+                        System.exit(0);
+                    }
+                }
+            }
             
+            File appHomeProp = new File(appDir.getAbsolutePath() + File.separator + APP_VERSION + File.separator + "application.properties");
+
             if (!appHomeProp.exists())
             {
                 File etcFileProp = new File(Main.appLocus + File.separator + "etc" + File.separator + "application.properties");
-                
+
                 if (etcFileProp.exists() && etcFileProp.isFile())
                 {
                     Files.copy(etcFileProp.toPath(), appHomeProp.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -701,8 +771,7 @@ public class Main
             
             String appReleaseLevel = properties.getProperty("app.release.level");
             
-            if ((ReleaseLevel.PRD.name().equals(appReleaseLevel)) && ((jksTool == null) ||
-                (!"00000000-0000-0000-0000-000000000000".equals(APP_LICENSE))))
+            if ((ReleaseLevel.PRD.name().equals(appReleaseLevel)) && (prdJKS != null))
             {
                 APP_RELEASE_LEVEL = ReleaseLevel.PRD;
             }

@@ -2,7 +2,7 @@
 
 ## Przeznaczenie
 
-Projekt JpkTaxApp to prosta implementacji aplikacji biurowej w środowisku JAVA do obsługi dokumentów JPK wymaganych przez organy kontroli skarbowej oraz Ministerstwo Finansów zgodna ze specyfikacją zamieszczoną na stronie http://jpk.mf.gov.pl/ w sekcji "Specyfikacja interfejsów usług Jednolitego Pliku Kontrolnego" w wersji 1.7
+Projekt JpkTaxApp to prosta implementacji aplikacji biurowej w środowisku JAVA do obsługi dokumentów JPK wymaganych przez organy kontroli skarbowej oraz Ministerstwo Finansów zgodna ze specyfikacją zamieszczoną na stronie http://jpk.mf.gov.pl/ w sekcji "Specyfikacja interfejsów usług Jednolitego Pliku Kontrolnego" w wersji 2.0
 
 ## Wymagania
 
